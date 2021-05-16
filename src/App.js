@@ -3,6 +3,9 @@ import './App.css';
 import Login from './Login';
 import { getTokenFromUrl } from './spotify';
 import SpotifyWebAPI from "spotify-web-api-js";
+import Player from "./Player";
+import { useDataLayerValue } from './DataLayer';
+
 
 const spotify = new SpotifyWebAPI();
 
@@ -10,6 +13,8 @@ const spotify = new SpotifyWebAPI();
 function App() {
 
   const [token, setToken] = useState(null);
+  const [{user}, dispatch] = useDataLayerValue();
+
 
   useEffect(() => {
     const hash = getTokenFromUrl();
@@ -22,17 +27,26 @@ function App() {
       spotify.setAccessToken(_token);
       
       spotify.getMe().then(user => {
-        console.log('Person', user);
+        // console.log('Person', user);
+
+      dispatch({
+        type: 'SET_USER',
+        user: user
+      })
+
       })
     }
 
       }, []);
 
+  console.log('user', user)
   return (
     // BEM
     <div className="app">
       {
-        token ? (<h1> I'm Logged in </h1>) : (<Login />)
+        token ? 
+        <Player />
+         : (<Login />)
       }
 
     </div>
